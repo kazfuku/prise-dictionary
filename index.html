@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品検索 - Prise Dictionary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            min-width: 60px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #3d8b40;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            min-height: 50px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .result-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .result-content {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .result-content.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .result-content.not-found {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>商品検索</h1>
+
+        <div class="form-group">
+            <label for="productNumber">番号</label>
+            <input type="number" id="productNumber" placeholder="番号を入力してください" min="1">
+            <button id="searchButton">表示</button>
+        </div>
+
+        <div class="result">
+            <div class="result-label">商品名:</div>
+            <div id="resultDisplay" class="result-content empty"></div>
+        </div>
+    </div>
+
+    <script>
+        // 商品データ
+        const products = [
+            { "number": 1, "name": "鉛筆" },
+            { "number": 2, "name": "消しゴム" }
+        ];
+
+        // DOM要素の取得
+        const productNumberInput = document.getElementById('productNumber');
+        const searchButton = document.getElementById('searchButton');
+        const resultDisplay = document.getElementById('resultDisplay');
+
+        // 商品を検索する関数
+        function searchProduct() {
+            const inputNumber = parseInt(productNumberInput.value);
+
+            // 入力値のバリデーション
+            if (isNaN(inputNumber) || inputNumber <= 0) {
+                resultDisplay.textContent = '有効な番号を入力してください';
+                resultDisplay.className = 'result-content not-found';
+                return;
+            }
+
+            // 商品を検索
+            const product = products.find(p => p.number === inputNumber);
+
+            // 結果を表示
+            if (product) {
+                resultDisplay.textContent = product.name;
+                resultDisplay.className = 'result-content';
+            } else {
+                resultDisplay.textContent = '該当する商品が見つかりません';
+                resultDisplay.className = 'result-content not-found';
+            }
+        }
+
+        // イベントリスナーの設定
+        searchButton.addEventListener('click', searchProduct);
+
+        // Enterキーでも検索できるようにする
+        productNumberInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchProduct();
+            }
+        });
+    </script>
+</body>
+</html>
