@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品検索 - Prise Dictionary</title>
+    <title>Prise Dictionary - リダイレクト中...</title>
     <style>
         * {
             margin: 0;
@@ -14,312 +14,85 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
             background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             padding: 20px;
-            line-height: 1.6;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        .redirect-container {
+            max-width: 500px;
             background-color: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        label {
-            font-weight: bold;
-            color: #555;
-            min-width: 60px;
-        }
-
-        input[type="number"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        button:active {
-            background-color: #3d8b40;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            min-height: 50px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .result-content {
-            font-size: 32px;
-            color: #333;
-            font-weight: bold;
             text-align: center;
         }
 
-        .result-content.empty {
-            color: #999;
-            font-style: italic;
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
         }
 
-        .result-content.not-found {
-            color: #f44336;
+        p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
 
-        .result-content.loading {
+        .loading {
+            font-size: 32px;
             color: #4CAF50;
-            font-style: italic;
-            font-size: 48px;
-            font-weight: bold;
+            margin: 20px 0;
         }
 
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.5) translateY(-20px);
-            }
-            50% {
-                transform: scale(1.1) translateY(0);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes dotPulse {
-            0% {
-                opacity: 0;
-                transform: scale(0.5) translateY(0);
-            }
-            25% {
-                opacity: 1;
-                transform: scale(2) translateY(-20px);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.5) translateY(0);
-            }
-            75% {
-                opacity: 1;
-                transform: scale(2) translateY(-20px);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0.5) translateY(0);
-            }
-        }
-
-        .loading-dots span {
+        a {
             display: inline-block;
-            animation: dotPulse 1s infinite;
-            margin: 0 5px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
 
-        .loading-dots span:nth-child(1) {
-            animation-delay: 0s;
+        a:hover {
+            background-color: #45a049;
         }
 
-        .loading-dots span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dots span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        .confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-            overflow: hidden;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            opacity: 0;
-        }
-
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
+        @keyframes pulse {
+            0%, 100% {
                 opacity: 1;
             }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
+            50% {
+                opacity: 0.3;
             }
         }
 
-        .confetti.active {
-            animation: confettiFall 3s ease-out forwards;
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
         }
     </style>
+    <script>
+        // 自動的にlist.htmlにリダイレクト
+        setTimeout(function() {
+            window.location.href = 'list.html';
+        }, 1000);
+    </script>
 </head>
 <body>
-    <div class="confetti-container" id="confettiContainer"></div>
-    <div class="container">
-        <div class="form-group">
-            <label for="productNumber">番号</label>
-            <input type="number" id="productNumber" placeholder="番号を入力してください" min="1">
-            <button id="searchButton">表示</button>
-        </div>
-
-        <div class="result">
-            <div id="resultDisplay" class="result-content empty"></div>
-        </div>
+    <div class="redirect-container">
+        <h1>Prise Dictionary</h1>
+        <p class="loading">...</p>
+        <p>賞品一覧ページにリダイレクトしています</p>
+        <p>
+            <small>自動的にリダイレクトされない場合は、以下のリンクをクリックしてください：</small><br>
+            <a href="list.html">賞品一覧ページへ</a>
+        </p>
     </div>
-
-    <script>
-        // 商品データ
-        const products = [
-            { "number": 1, "name": "鉛筆" },
-            { "number": 2, "name": "消しゴム" },
-            { "number": 3, "name": "ノート" },
-            { "number": 4, "name": "定規" },
-            { "number": 5, "name": "シャープペンシル" },
-            { "number": 6, "name": "ボールペン" },
-            { "number": 7, "name": "マーカー" },
-            { "number": 8, "name": "ハサミ" },
-            { "number": 9, "name": "ホッチキス" },
-            { "number": 10, "name": "修正テープ" }
-        ];
-
-        // DOM要素の取得
-        const productNumberInput = document.getElementById('productNumber');
-        const searchButton = document.getElementById('searchButton');
-        const resultDisplay = document.getElementById('resultDisplay');
-        const confettiContainer = document.getElementById('confettiContainer');
-
-        // 紙吹雪を生成する関数
-        function createConfetti() {
-            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#ffd93d', '#6bcf7f', '#c44569', '#a55eea'];
-            const confettiCount = 50;
-
-            for (let i = 0; i < confettiCount; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-
-                // ランダムな色
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
-                // ランダムな位置
-                confetti.style.left = Math.random() * 100 + '%';
-
-                // ランダムな遅延
-                confetti.style.animationDelay = Math.random() * 0.3 + 's';
-
-                // ランダムなサイズ
-                const size = Math.random() * 8 + 6;
-                confetti.style.width = size + 'px';
-                confetti.style.height = size + 'px';
-
-                confettiContainer.appendChild(confetti);
-
-                // アニメーション開始
-                setTimeout(() => {
-                    confetti.classList.add('active');
-                }, 10);
-
-                // アニメーション終了後に削除
-                setTimeout(() => {
-                    confetti.remove();
-                }, 3000);
-            }
-        }
-
-        // 商品を検索する関数
-        function searchProduct() {
-            const inputNumber = parseInt(productNumberInput.value);
-
-            // 入力値のバリデーション
-            if (isNaN(inputNumber) || inputNumber <= 0) {
-                resultDisplay.textContent = '有効な番号を入力してください';
-                resultDisplay.className = 'result-content not-found';
-                return;
-            }
-
-            // ローディング状態を表示
-            searchButton.disabled = true;
-            resultDisplay.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
-            resultDisplay.className = 'result-content loading';
-
-            // 期待感を演出するための遅延（2秒）
-            setTimeout(() => {
-                // 商品を検索
-                const product = products.find(p => p.number === inputNumber);
-
-                // 結果を表示（フェードイン効果付き）
-                if (product) {
-                    resultDisplay.textContent = product.name;
-                    resultDisplay.className = 'result-content fade-in';
-                    // 紙吹雪を表示
-                    createConfetti();
-                } else {
-                    resultDisplay.textContent = '該当する商品が見つかりません';
-                    resultDisplay.className = 'result-content not-found fade-in';
-                }
-
-                // ボタンを再度有効化
-                searchButton.disabled = false;
-            }, 2000);
-        }
-
-        // イベントリスナーの設定
-        searchButton.addEventListener('click', searchProduct);
-
-        // Enterキーでも検索できるようにする
-        productNumberInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                searchProduct();
-            }
-        });
-    </script>
 </body>
 </html>
