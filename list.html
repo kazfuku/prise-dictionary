@@ -124,9 +124,15 @@
 
         .nav-buttons {
             display: grid;
-            grid-template-columns: repeat(10, auto);
+            grid-template-columns: repeat(5, auto);
             gap: 10px;
             justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .nav-buttons {
+                grid-template-columns: repeat(10, auto);
+            }
         }
 
         .nav-button {
