@@ -165,9 +165,44 @@
         .prize-item {
             scroll-margin-top: 20px;
         }
+
+        /* 認証関連のスタイル */
+        .container {
+            display: none; /* デフォルトで非表示 */
+        }
+
+        .container.authenticated {
+            display: block; /* 認証成功時に表示 */
+        }
+
+        .auth-error {
+            max-width: 600px;
+            margin: 100px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .auth-error h1 {
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+
+        .auth-error p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
+    <div id="authError" class="auth-error" style="display: none;">
+        <h1>アクセスが拒否されました</h1>
+        <p>このページにアクセスするには有効なトークンが必要です。</p>
+    </div>
+
     <div class="container">
         <h1>賞品一覧</h1>
 
@@ -191,47 +226,91 @@
 
     <script src="products.js"></script>
     <script>
-        // GitHub Pages のベースURL
-        const BASE_URL = 'https://kazfuku.github.io/prize-dictionary';
+        // トークン認証機能
+        const VALID_TOKEN_HASH = 'ea73fa1f707d87072070c6984134337395a1880c1c8a72f8d6b26c75aba6cb62';
 
-        // QRコード生成APIのURL
-        const QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
+        // SHA-256ハッシュ計算関数
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
 
-        // ナビゲーションボタンを生成
-        const navButtons = document.getElementById('navButtons');
+        // トークン検証
+        async function verifyToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
 
-        products.forEach(product => {
-            const navButton = document.createElement('a');
-            navButton.href = `#prize-${product.number}`;
-            navButton.className = 'nav-button';
-            navButton.textContent = product.number;
-            navButtons.appendChild(navButton);
-        });
+            if (!token) {
+                document.getElementById('authError').style.display = 'block';
+                return false;
+            }
 
-        // 賞品グリッドを生成
-        const prizeGrid = document.getElementById('prizeGrid');
+            const tokenHash = await sha256(token);
 
-        products.forEach(product => {
-            // 賞品詳細ページのURL
-            const prizeUrl = `${BASE_URL}/prize.html?id=${product.uuid}`;
+            if (tokenHash === VALID_TOKEN_HASH) {
+                document.querySelector('.container').classList.add('authenticated');
+                return true;
+            } else {
+                document.getElementById('authError').style.display = 'block';
+                return false;
+            }
+        }
 
-            // QRコードのURL
-            const qrCodeUrl = `${QR_API}?size=150x150&data=${encodeURIComponent(prizeUrl)}`;
+        // ページ初期化
+        async function initializePage() {
+            const isAuthenticated = await verifyToken();
+            if (!isAuthenticated) {
+                return; // 認証失敗時は何もしない
+            }
 
-            // 賞品アイテムを作成
-            const prizeItem = document.createElement('div');
-            prizeItem.className = 'prize-item';
-            prizeItem.id = `prize-${product.number}`;
-            prizeItem.innerHTML = `
-                <div class="prize-number">番号 ${product.number}</div>
-                <div class="qr-code">
-                    <img src="${qrCodeUrl}" alt="QR Code for Prize ${product.number}" loading="lazy">
-                </div>
-                <a href="prize.html?id=${product.uuid}" class="prize-link">リンクで開く</a>
-            `;
+            // GitHub Pages のベースURL
+            const BASE_URL = 'https://kazfuku.github.io/prize-dictionary';
 
-            prizeGrid.appendChild(prizeItem);
-        });
+            // QRコード生成APIのURL
+            const QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
+
+            // ナビゲーションボタンを生成
+            const navButtons = document.getElementById('navButtons');
+
+            products.forEach(product => {
+                const navButton = document.createElement('a');
+                navButton.href = `#prize-${product.number}`;
+                navButton.className = 'nav-button';
+                navButton.textContent = product.number;
+                navButtons.appendChild(navButton);
+            });
+
+            // 賞品グリッドを生成
+            const prizeGrid = document.getElementById('prizeGrid');
+
+            products.forEach(product => {
+                // 賞品詳細ページのURL
+                const prizeUrl = `${BASE_URL}/prize.html?id=${product.uuid}`;
+
+                // QRコードのURL
+                const qrCodeUrl = `${QR_API}?size=150x150&data=${encodeURIComponent(prizeUrl)}`;
+
+                // 賞品アイテムを作成
+                const prizeItem = document.createElement('div');
+                prizeItem.className = 'prize-item';
+                prizeItem.id = `prize-${product.number}`;
+                prizeItem.innerHTML = `
+                    <div class="prize-number">番号 ${product.number}</div>
+                    <div class="qr-code">
+                        <img src="${qrCodeUrl}" alt="QR Code for Prize ${product.number}" loading="lazy">
+                    </div>
+                    <a href="prize.html?id=${product.uuid}" class="prize-link">リンクで開く</a>
+                `;
+
+                prizeGrid.appendChild(prizeItem);
+            });
+        }
+
+        // ページ読み込み時に初期化
+        initializePage();
     </script>
 </body>
 </html>

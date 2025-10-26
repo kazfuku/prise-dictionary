@@ -374,6 +374,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const uuid = urlParams.get('id');
 
+        // Base64デコード関数（日本語対応）
+        function decodeBase64(str) {
+            const binaryString = atob(str);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
         // ランクマッピング関数
         function getRankName(rank) {
             const rankMap = {
@@ -619,7 +629,7 @@
 
                     // さらに2秒後に賞品名を表示
                     setTimeout(() => {
-                        resultDisplay.textContent = product.name;
+                        resultDisplay.textContent = decodeBase64(product.name);
                         resultDisplay.className = 'result-content fade-in';
                         // ランクに応じたアニメーションを表示
                         createConfetti(product.rank);
