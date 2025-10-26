@@ -191,6 +191,75 @@
         .confetti.active {
             animation: confettiFall 3s ease-out forwards;
         }
+
+        .firework {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        @keyframes fireworkExplosion {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .firework.active {
+            animation: fireworkExplosion 1.5s ease-out forwards;
+        }
+
+        .star {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            opacity: 0;
+            --tx: 0;
+            --ty: 0;
+        }
+
+        @keyframes starBounce {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            20% {
+                transform: translate(calc(var(--tx) * 1px), calc(var(--ty) * 1px)) scale(1.2);
+            }
+            40% {
+                transform: translate(0, 0) scale(1);
+            }
+            55% {
+                transform: translate(calc(var(--tx) * 0.5px), calc(var(--ty) * 0.5px)) scale(1.1);
+            }
+            70% {
+                transform: translate(0, 0) scale(1);
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .star.active {
+            animation: starBounce 2.5s ease-out forwards;
+        }
+
+        .star::before {
+            content: '★';
+            font-size: 60px;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
     </style>
 </head>
 <body>
@@ -206,18 +275,18 @@
     </div>
 
     <script>
-        // 商品データ（UUID付き）
+        // 商品データ（UUID付き、ランク付き）
         const products = [
-            { "number": 1, "uuid": "a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d", "name": "鉛筆" },
-            { "number": 2, "uuid": "b2c3d4e5-f6a7-4b2c-9d3e-4f5a6b7c8d9e", "name": "消しゴム" },
-            { "number": 3, "uuid": "c3d4e5f6-a7b8-4c3d-ae4f-5a6b7c8d9eaf", "name": "ノート" },
-            { "number": 4, "uuid": "d4e5f6a7-b8c9-4d4e-bf5a-6b7c8d9eafb0", "name": "定規" },
-            { "number": 5, "uuid": "e5f6a7b8-c9da-4e5f-c06b-7c8d9eafb0c1", "name": "シャープペンシル" },
-            { "number": 6, "uuid": "f6a7b8c9-daeb-4f6a-d17c-8d9eafb0c1d2", "name": "ボールペン" },
-            { "number": 7, "uuid": "a7b8c9da-ebfc-4a7b-e28d-9eafb0c1d2e3", "name": "マーカー" },
-            { "number": 8, "uuid": "b8c9daeb-fc0d-4b8c-f39e-afb0c1d2e3f4", "name": "ハサミ" },
-            { "number": 9, "uuid": "c9daebfc-0d1e-4c9d-04af-b0c1d2e3f405", "name": "ホッチキス" },
-            { "number": 10, "uuid": "daebfc0d-1e2f-4da0-15b0-c1d2e3f40516", "name": "修正テープ" }
+            { "number": 1, "uuid": "a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d", "name": "鉛筆", "rank": "D" },
+            { "number": 2, "uuid": "b2c3d4e5-f6a7-4b2c-9d3e-4f5a6b7c8d9e", "name": "消しゴム", "rank": "D" },
+            { "number": 3, "uuid": "c3d4e5f6-a7b8-4c3d-ae4f-5a6b7c8d9eaf", "name": "ノート", "rank": "B" },
+            { "number": 4, "uuid": "d4e5f6a7-b8c9-4d4e-bf5a-6b7c8d9eafb0", "name": "定規", "rank": "C" },
+            { "number": 5, "uuid": "e5f6a7b8-c9da-4e5f-c06b-7c8d9eafb0c1", "name": "シャープペンシル", "rank": "B" },
+            { "number": 6, "uuid": "f6a7b8c9-daeb-4f6a-d17c-8d9eafb0c1d2", "name": "ボールペン", "rank": "C" },
+            { "number": 7, "uuid": "a7b8c9da-ebfc-4a7b-e28d-9eafb0c1d2e3", "name": "マーカー", "rank": "B" },
+            { "number": 8, "uuid": "b8c9daeb-fc0d-4b8c-f39e-afb0c1d2e3f4", "name": "ハサミ", "rank": "A" },
+            { "number": 9, "uuid": "c9daebfc-0d1e-4c9d-04af-b0c1d2e3f405", "name": "ホッチキス", "rank": "A" },
+            { "number": 10, "uuid": "daebfc0d-1e2f-4da0-15b0-c1d2e3f40516", "name": "修正テープ", "rank": "S" }
         ];
 
         // DOM要素の取得
@@ -229,40 +298,192 @@
         const urlParams = new URLSearchParams(window.location.search);
         const uuid = urlParams.get('id');
 
-        // 紙吹雪を生成する関数
-        function createConfetti() {
+        // 花火を生成する関数（Sランク用）
+        function createFireworks() {
+            const fireworksCount = 3; // 花火の数
             const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#ffd93d', '#6bcf7f', '#c44569', '#a55eea'];
-            const confettiCount = 50;
 
-            for (let i = 0; i < confettiCount; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
+            for (let f = 0; f < fireworksCount; f++) {
+                // 花火の中心位置
+                const centerX = Math.random() * 60 + 20; // 20-80%の範囲
+                const centerY = Math.random() * 40 + 10; // 10-50%の範囲
 
-                // ランダムな色
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                // 星エフェクト
+                for (let s = 0; s < 8; s++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = centerX + '%';
+                    star.style.top = centerY + '%';
 
-                // ランダムな位置
-                confetti.style.left = Math.random() * 100 + '%';
+                    // 放射状に跳ねる方向を計算
+                    const angle = (Math.PI * 2 * s) / 8;
+                    const distance = 200; // 跳ねる距離
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
 
-                // ランダムな遅延
-                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                    star.style.setProperty('--tx', tx);
+                    star.style.setProperty('--ty', ty);
+                    star.style.animationDelay = (f * 0.3 + s * 0.05) + 's';
 
-                // ランダムなサイズ
-                const size = Math.random() * 8 + 6;
-                confetti.style.width = size + 'px';
-                confetti.style.height = size + 'px';
+                    confettiContainer.appendChild(star);
 
-                confettiContainer.appendChild(confetti);
+                    setTimeout(() => {
+                        star.classList.add('active');
+                    }, f * 300 + s * 50 + 10);
 
-                // アニメーション開始
+                    setTimeout(() => {
+                        star.remove();
+                    }, f * 300 + 2500);
+                }
+
+                // 花火のパーティクル
+                const particlesPerFirework = 40;
+                for (let i = 0; i < particlesPerFirework; i++) {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+
+                    const angle = (Math.PI * 2 * i) / particlesPerFirework;
+                    const velocity = 200 + Math.random() * 150;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity;
+
+                    firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    firework.style.left = centerX + '%';
+                    firework.style.top = centerY + '%';
+                    firework.style.setProperty('--tx', tx + 'px');
+                    firework.style.setProperty('--ty', ty + 'px');
+                    firework.style.animationDelay = (f * 0.3) + 's';
+
+                    // カスタムプロパティを使用してアニメーションを設定
+                    firework.style.animation = `fireworkExplosion 1.5s ease-out ${f * 0.3}s forwards`;
+                    const keyframes = `@keyframes fireworkExplosion${i}${f} {
+                        0% { transform: translate(0, 0) scale(1); opacity: 1; }
+                        100% { transform: translate(${tx}px, ${ty}px) scale(0); opacity: 0; }
+                    }`;
+                    const styleSheet = document.createElement('style');
+                    styleSheet.textContent = keyframes;
+                    document.head.appendChild(styleSheet);
+                    firework.style.animation = `fireworkExplosion${i}${f} 1.5s ease-out ${f * 0.3}s forwards`;
+
+                    confettiContainer.appendChild(firework);
+
+                    setTimeout(() => {
+                        firework.remove();
+                        styleSheet.remove();
+                    }, f * 300 + 1500);
+                }
+            }
+        }
+
+        // Aランク用の星エフェクト（Sランクより控えめ）
+        function createStarsForA() {
+            const centerX = 50; // 画面中央
+            const centerY = 30;
+
+            // 星エフェクト（4個のみ）
+            for (let s = 0; s < 4; s++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = centerX + '%';
+                star.style.top = centerY + '%';
+
+                // 4方向に跳ねる
+                const angle = (Math.PI * 2 * s) / 4;
+                const distance = 120; // Sランクより短い距離
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                star.style.setProperty('--tx', tx);
+                star.style.setProperty('--ty', ty);
+                star.style.animationDelay = (s * 0.1) + 's';
+
+                confettiContainer.appendChild(star);
+
                 setTimeout(() => {
-                    confetti.classList.add('active');
-                }, 10);
+                    star.classList.add('active');
+                }, s * 100 + 10);
 
-                // アニメーション終了後に削除
                 setTimeout(() => {
-                    confetti.remove();
-                }, 3000);
+                    star.remove();
+                }, 2500);
+            }
+        }
+
+        // 紙吹雪を生成する関数（ランク別）
+        function createConfetti(rank) {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#ffd93d', '#6bcf7f', '#c44569', '#a55eea'];
+            const pastelColors = ['#ffb3ba', '#bae1ff', '#baffc9', '#ffffba', '#ffd8b3', '#e0b3ff']; // Cランク用のパステルカラー
+            let confettiCount = 50; // デフォルトはB
+            let hasFireworks = false;
+            let hasStars = false;
+            let useColors = colors;
+
+            // ランク別の設定
+            switch(rank) {
+                case 'S':
+                    confettiCount = 100;
+                    hasFireworks = true;
+                    break;
+                case 'A':
+                    confettiCount = 80;
+                    hasStars = true; // Aランクは星あり
+                    break;
+                case 'B':
+                    confettiCount = 50;
+                    break;
+                case 'C':
+                    confettiCount = 30;
+                    useColors = pastelColors; // 控えめな色
+                    break;
+                case 'D':
+                    confettiCount = 0; // 紙吹雪なし
+                    break;
+                default:
+                    confettiCount = 50;
+            }
+
+            // 紙吹雪の生成（D以外）
+            if (confettiCount > 0) {
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+
+                    // ランダムな色
+                    confetti.style.backgroundColor = useColors[Math.floor(Math.random() * useColors.length)];
+
+                    // ランダムな位置
+                    confetti.style.left = Math.random() * 100 + '%';
+
+                    // ランダムな遅延
+                    confetti.style.animationDelay = Math.random() * 0.3 + 's';
+
+                    // ランダムなサイズ
+                    const size = Math.random() * 8 + 6;
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+
+                    confettiContainer.appendChild(confetti);
+
+                    // アニメーション開始
+                    setTimeout(() => {
+                        confetti.classList.add('active');
+                    }, 10);
+
+                    // アニメーション終了後に削除
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+
+            // 花火エフェクト（Sランクのみ）
+            if (hasFireworks) {
+                createFireworks();
+            }
+
+            // 星エフェクト（Aランク）
+            if (hasStars) {
+                createStarsForA();
             }
         }
 
@@ -290,8 +511,8 @@
                 if (product) {
                     resultDisplay.textContent = product.name;
                     resultDisplay.className = 'result-content fade-in';
-                    // 紙吹雪を表示
-                    createConfetti();
+                    // ランクに応じた紙吹雪を表示
+                    createConfetti(product.rank);
                 } else {
                     resultDisplay.textContent = 'エラー: 該当する賞品が見つかりません';
                     resultDisplay.className = 'result-content error fade-in';
