@@ -63,8 +63,91 @@
             cursor: not-allowed;
         }
 
-        .result {
+        .rank-section {
             margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            min-height: 80px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.5s, border 0.5s;
+        }
+
+        .rank-section.rank-s {
+            background-color: #ffe5e5;
+            border: 2px solid #ff6b6b;
+        }
+
+        .rank-section.rank-a {
+            background-color: #fff0e0;
+            border: 2px solid #ff9f40;
+        }
+
+        .rank-section.rank-b {
+            background-color: #fff9e6;
+            border: 2px solid #ffd700;
+        }
+
+        .rank-section.rank-c {
+            background-color: #f5f5e8;
+            border: 2px solid #d4c5a0;
+        }
+
+        .rank-section.rank-d {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+        }
+
+        .rank-content {
+            font-size: 36px;
+            color: #d4af37;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .rank-content.hidden {
+            color: #ccc;
+            font-style: italic;
+            font-size: 18px;
+        }
+
+        .rank-content.loading {
+            color: #ffa500;
+            font-style: italic;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .rank-content.error {
+            color: #f44336;
+            font-size: 18px;
+        }
+
+        .rank-section.rank-s .rank-content {
+            color: #ff6b6b;
+        }
+
+        .rank-section.rank-a .rank-content {
+            color: #ff9f40;
+        }
+
+        .rank-section.rank-b .rank-content {
+            color: #ffd700;
+        }
+
+        .rank-section.rank-c .rank-content {
+            color: #d4c5a0;
+        }
+
+        .rank-section.rank-d .rank-content {
+            color: #999;
+        }
+
+        .result {
+            margin-top: 15px;
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 4px;
@@ -269,6 +352,10 @@
             <button id="revealButton">賞品を表示</button>
         </div>
 
+        <div class="rank-section">
+            <div id="rankDisplay" class="rank-content hidden">???</div>
+        </div>
+
         <div class="result">
             <div id="resultDisplay" class="result-content hidden">???</div>
         </div>
@@ -278,12 +365,26 @@
     <script>
         // DOM要素の取得
         const revealButton = document.getElementById('revealButton');
+        const rankSection = document.querySelector('.rank-section');
+        const rankDisplay = document.getElementById('rankDisplay');
         const resultDisplay = document.getElementById('resultDisplay');
         const confettiContainer = document.getElementById('confettiContainer');
 
         // URLパラメータからUUIDを取得
         const urlParams = new URLSearchParams(window.location.search);
         const uuid = urlParams.get('id');
+
+        // ランクマッピング関数
+        function getRankName(rank) {
+            const rankMap = {
+                'S': '特等',
+                'A': '1等',
+                'B': '2等',
+                'C': '3等',
+                'D': '4等'
+            };
+            return rankMap[rank] || rank;
+        }
 
         // 花火を生成する関数（Sランク用）
         function createFireworks() {
@@ -478,37 +579,59 @@
         function revealPrize() {
             // UUIDが指定されていない場合
             if (!uuid) {
+                rankDisplay.textContent = 'エラー: 賞品IDが指定されていません';
+                rankDisplay.className = 'rank-content error';
                 resultDisplay.textContent = 'エラー: 賞品IDが指定されていません';
                 resultDisplay.className = 'result-content error';
                 revealButton.disabled = true;
                 return;
             }
 
-            // ローディング状態を表示
+            // ボタンを無効化
             revealButton.disabled = true;
-            resultDisplay.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
-            resultDisplay.className = 'result-content loading';
 
-            // 期待感を演出するための遅延（2秒）
+            // UUIDで賞品を検索
+            const product = products.find(p => p.uuid === uuid);
+
+            if (!product) {
+                rankDisplay.textContent = 'エラー: 該当する賞品が見つかりません';
+                rankDisplay.className = 'rank-content error';
+                resultDisplay.textContent = 'エラー: 該当する賞品が見つかりません';
+                resultDisplay.className = 'result-content error';
+                return;
+            }
+
+            // フェーズ1: ランク表示のローディング
+            rankDisplay.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+            rankDisplay.className = 'rank-content loading';
+
+            // 2秒後にランクを表示
             setTimeout(() => {
-                // UUIDで賞品を検索
-                const product = products.find(p => p.uuid === uuid);
+                const rankName = getRankName(product.rank);
+                rankDisplay.textContent = rankName;
+                rankDisplay.className = 'rank-content fade-in';
+                rankSection.classList.add('rank-' + product.rank.toLowerCase());
 
-                // 結果を表示（フェードイン効果付き）
-                if (product) {
-                    resultDisplay.textContent = product.name;
-                    resultDisplay.className = 'result-content fade-in';
-                    // ランクに応じた紙吹雪を表示
-                    createConfetti(product.rank);
-                } else {
-                    resultDisplay.textContent = 'エラー: 該当する賞品が見つかりません';
-                    resultDisplay.className = 'result-content error fade-in';
-                }
+                // フェーズ2: 賞品名表示のローディング
+                setTimeout(() => {
+                    resultDisplay.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+                    resultDisplay.className = 'result-content loading';
+
+                    // さらに2秒後に賞品名を表示
+                    setTimeout(() => {
+                        resultDisplay.textContent = product.name;
+                        resultDisplay.className = 'result-content fade-in';
+                        // ランクに応じたアニメーションを表示
+                        createConfetti(product.rank);
+                    }, 2000);
+                }, 500); // ランク表示後、少し間を置いてからローディング開始
             }, 2000);
         }
 
         // 初期チェック: UUIDが存在するか確認
         if (!uuid) {
+            rankDisplay.textContent = 'エラー: 賞品IDが指定されていません';
+            rankDisplay.className = 'rank-content error';
             resultDisplay.textContent = 'エラー: 賞品IDが指定されていません';
             resultDisplay.className = 'result-content error';
             revealButton.disabled = true;
