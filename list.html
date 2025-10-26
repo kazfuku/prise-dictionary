@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>賞品一覧 - Prise Dictionary</title>
+    <title>賞品一覧 - Prize Dictionary</title>
     <style>
         * {
             margin: 0;
@@ -192,7 +192,7 @@
     <script src="products.js"></script>
     <script>
         // GitHub Pages のベースURL
-        const BASE_URL = 'https://kazfuku.github.io/prise-dictionary';
+        const BASE_URL = 'https://kazfuku.github.io/prize-dictionary';
 
         // QRコード生成APIのURL
         const QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
@@ -213,7 +213,7 @@
 
         products.forEach(product => {
             // 賞品詳細ページのURL
-            const prizeUrl = `${BASE_URL}/prise.html?id=${product.uuid}`;
+            const prizeUrl = `${BASE_URL}/prize.html?id=${product.uuid}`;
 
             // QRコードのURL
             const qrCodeUrl = `${QR_API}?size=150x150&data=${encodeURIComponent(prizeUrl)}`;
@@ -227,7 +227,7 @@
                 <div class="qr-code">
                     <img src="${qrCodeUrl}" alt="QR Code for Prize ${product.number}" loading="lazy">
                 </div>
-                <a href="prise.html?id=${product.uuid}" class="prize-link">リンクで開く</a>
+                <a href="prize.html?id=${product.uuid}" class="prize-link">リンクで開く</a>
             `;
 
             prizeGrid.appendChild(prizeItem);

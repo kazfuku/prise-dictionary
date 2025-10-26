@@ -1,4 +1,4 @@
-# Prise Dictionary
+# Prize Dictionary
 
 抽選の賞品を演出とともに表示するWebアプリケーションです。
 
@@ -9,7 +9,7 @@ QRコードとUUIDを使用した抽選賞品表示システムです。賞品�
 ## デモ
 
 GitHub Pagesでホスティングされています:
-https://kazfuku.github.io/prise-dictionary/
+https://kazfuku.github.io/prize-dictionary/
 
 ## 機能
 
@@ -37,4 +37,4 @@ https://kazfuku.github.io/prise-dictionary/
 
 ## ローカルでの実行
 
-ブラウザで `list.html` または `prise.html` を開くだけで動作します。
+ブラウザで `list.html` または `prize.html` を開くだけで動作します。

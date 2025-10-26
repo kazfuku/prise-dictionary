@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Prise Dictionary is a lottery prize reveal web application that uses QR codes and UUIDs to securely display prize names. The application prevents users from enumerating all available prizes by using unique identifiers instead of sequential numbers. It is built with vanilla HTML/JavaScript and hosted on GitHub Pages at https://kazfuku.github.io/prise-dictionary/.
+Prize Dictionary is a lottery prize reveal web application that uses QR codes and UUIDs to securely display prize names. The application prevents users from enumerating all available prizes by using unique identifiers instead of sequential numbers. It is built with vanilla HTML/JavaScript and hosted on GitHub Pages at https://kazfuku.github.io/prize-dictionary/.
 
 ## Running the Application
 
@@ -27,11 +27,11 @@ The application consists of three HTML files:
   - Prize number (for administrative reference)
   - QR code linking to the prize detail page with UUID parameter
   - Direct link for non-QR access
-- **Base URL**: GitHub Pages URL (https://kazfuku.github.io/prise-dictionary) for QR code generation
+- **Base URL**: GitHub Pages URL (https://kazfuku.github.io/prize-dictionary) for QR code generation
 
-### `prise.html` (Prize Detail Page)
+### `prize.html` (Prize Detail Page)
 - UUID-based prize reveal page
-- Accepts `id` parameter in URL query string (e.g., `prise.html?id={uuid}`)
+- Accepts `id` parameter in URL query string (e.g., `prize.html?id={uuid}`)
 - **Product Data**: Same hardcoded array as `list.html` with `number`, `uuid`, and `name` properties
 - **UI Components**:
   - "賞品を表示" (Reveal Prize) button
@@ -47,18 +47,18 @@ The application consists of three HTML files:
 
 1. User draws a lottery number
 2. Administrator displays the corresponding prize's QR code from `list.html`
-3. User scans QR code to access `prise.html?id={uuid}`
+3. User scans QR code to access `prize.html?id={uuid}`
 4. User clicks "賞品を表示" button to reveal prize name
 5. Prize name appears with confetti animation
 
 ## Modifying Product Data
 
-To add/modify products, update the `products` array in **both** `list.html` and `prise.html`. Each product object must have:
+To add/modify products, update the `products` array in **both** `list.html` and `prize.html`. Each product object must have:
 - `number`: Integer product ID (for administrative reference)
 - `uuid`: UUID v4 string (unique identifier for secure access)
 - `name`: String product name (in Japanese)
 
-Important: Keep the product data synchronized between `list.html` and `prise.html`.
+Important: Keep the product data synchronized between `list.html` and `prize.html`.
 
 ## Security Features
 
